@@ -13,7 +13,8 @@ class SalesData extends Model
     
     protected $fillable = [
         'tanggal',
-        'nama_obat', 
+        'nama_obat',
+        'satuan',
         'x1',
         'x2',
         'y'

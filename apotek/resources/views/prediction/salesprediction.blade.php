@@ -18,6 +18,18 @@
                     Dashboard Prediksi Penjualan Obat
                 </h1>
                 
+                @if(session('import_errors') && count(session('import_errors')) > 0)
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    <strong>Beberapa baris tidak dapat diimport:</strong>
+                    <ul class="mb-0">
+                        @foreach(session('import_errors') as $err)
+                            <li>Baris {{ $err['row'] }}: {{ $err['message'] }}</li>
+                        @endforeach
+                    </ul>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                @endif
+
                 <!-- Alert Messages -->
                 @if(session('success'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -39,96 +51,106 @@
                         <!-- Upload CSV -->
                         <div class="row mb-4">
                             <div class="col-12">
-                                <h6>Import dari CSV:</h6>
-                                <form action="{{ route('import') }}" method="POST" enctype="multipart/form-data" class="row g-3">
-                                    @csrf
-                                    <div class="col-md-6">
-                                        <label for="file" class="form-label">Pilih File CSV</label>
-                                        <input type="file" class="form-control" id="file" name="file" accept=".csv,.txt" required>
-                                        <div class="form-text">
-                                            Format file: CSV dengan header: tanggal,nama_obat,x1 (harga) ,x2 (curah hujan) ,y (penjualan)
-                                        </div>
+                                <h6 class="mb-3">Import dari CSV:</h6>
+                                
+                                <!-- Form Import Penjualan -->
+                                <div class="card mb-3">
+                                    <div class="card-body">
+                                        <h6 class="card-subtitle mb-3 text-muted">Import Data Penjualan</h6>
+                                        <form action="{{ route('import.sales') }}" method="POST" enctype="multipart/form-data" class="row g-3 align-items-center">
+                                            @csrf
+                                            <div class="col-md-6">
+                                                <label for="file_sales" class="form-label">File Penjualan (CSV)</label>
+                                                <input type="file" class="form-control" id="file_sales" name="file_sales" accept=".csv,.txt" required>
+                                                <div class="form-text">
+                                                    Format header: <code>vc_tgl_nota, vc_n_obat, vc_n_satuan, dc_rupiah, dc_qty</code>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6 d-flex align-items-end">
+                                                <button type="submit" class="btn btn-success w-100">
+                                                    <i class="fas fa-upload me-2"></i>Import Penjualan
+                                                </button>
+                                            </div>
+                                        </form>
                                     </div>
-                                    <div class="col-md-6 d-flex align-items-end">
-                                        <button type="submit" class="btn btn-success">
-                                            <i class="fas fa-upload me-2"></i>Import CSV
-                                        </button>
+                                </div>
+
+                                <!-- Form Import Curah Hujan -->
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h6 class="card-subtitle mb-3 text-muted">Import Data Curah Hujan</h6>
+                                        <form action="{{ route('import.rainfall') }}" method="POST" enctype="multipart/form-data" class="row g-3 align-items-center">
+                                            @csrf
+                                            <div class="col-md-6">
+                                                <label for="file_rainfall" class="form-label">File Curah Hujan (CSV)</label>
+                                                <input type="file" class="form-control" id="file_rainfall" name="file_rainfall" accept=".csv,.txt" required>
+                                                <div class="form-text">
+                                                    Format header: <code>tanggal, curahhujan</code>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6 d-flex align-items-end">
+                                                <button type="submit" class="btn btn-primary w-100">
+                                                    <i class="fas fa-cloud-rain me-2"></i>Import Curah Hujan
+                                                </button>
+                                            </div>
+                                        </form>
                                     </div>
-                                </form>
+                                </div>
                             </div>
                         </div>
 
                         <!-- Input Manual -->
                         <div class="row">
                             <div class="col-12">
-                                <h6>Input Manual:</h6>
-                                <form action="{{ route('store.manual') }}" method="POST" class="row g-3">
-                                    @csrf
-                                    <div class="col-md-2">
-                                        <label for="tanggal" class="form-label">Tanggal</label>
-                                        <input type="date" class="form-control" id="tanggal" name="tanggal" required>
+                                <h6 class="mb-3">Input Manual:</h6>
+                                <div class="card">
+                                    <div class="card-body">
+                                        <form action="{{ route('store.manual') }}" method="POST" class="row g-3">
+                                            @csrf
+                                            <div class="col-md-2">
+                                                <label for="tanggal" class="form-label">Tanggal</label>
+                                                <input type="date" class="form-control" id="tanggal" name="tanggal" required>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label for="nama_obat" class="form-label">Nama Obat</label>
+                                                <input type="text" class="form-control" id="nama_obat" name="nama_obat" placeholder="Masukkan Nama Obat" required>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label for="satuan" class="form-label">Satuan</label>
+                                                <input type="text" class="form-control" id="satuan" name="satuan" placeholder="Masukkan Satuan Obat">
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label for="x1" class="form-label">X1 (Harga)</label>
+                                                <input type="number" step="0.01" class="form-control" id="x1" name="x1" placeholder="Masukkan Harga Obat" required>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label for="x2" class="form-label">X2 (Curah Hujan)</label>
+                                                <input type="number" step="0.01" class="form-control" id="x2" name="x2" placeholder="Masukkan Curah Hujan" required>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label for="y" class="form-label">Y (Penjualan)</label>
+                                                <input type="number" step="0.01" class="form-control" id="y" name="y" placeholder="Masukkan Jumlah Penjualan" required>
+                                            </div>
+                                            <div class="col-md-12 mt-2">
+                                                <button type="submit" class="btn btn-primary w-100">
+                                                    <i class="fas fa-plus me-2"></i>Tambah Data
+                                                </button>
+                                            </div>
+                                        </form>
                                     </div>
-                                    <div class="col-md-2">
-                                        <label for="nama_obat" class="form-label">Nama Obat</label>
-                                        <input type="text" class="form-control" id="nama_obat" name="nama_obat" placeholder="Antasida" required>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <label for="x1" class="form-label">X1 (Harga)</label>
-                                        <input type="number" step="0.01" class="form-control" id="x1" name="x1" placeholder="100" required>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <label for="x2" class="form-label">X2 (Curah Hujan)</label>
-                                        <input type="number" step="0.01" class="form-control" id="x2" name="x2" placeholder="50" required>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <label for="y" class="form-label">Y (Penjualan)</label>
-                                        <input type="number" step="0.01" class="form-control" id="y" name="y" placeholder="200" required>
-                                    </div>
-                                    <div class="col-md-2 d-flex align-items-end">
-                                        <button type="submit" class="btn btn-primary">
-                                            <i class="fas fa-plus me-2"></i>Tambah Data
-                                        </button>
-                                    </div>
-                                </form>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Debug Info -->
-                {{-- @if($salesData->count() > 0)
-                <div class="alert alert-info">
-                    <i class="fas fa-info-circle me-2"></i>
-                    Data ditemukan: {{ $salesData->count() }} records, {{ $obatList->count() }} jenis obat
-                </div>
-                @endif --}}
-<div class="row d-flex justify-content-center">
-    <div class="col-md-2 col-lg-2">
-        <div class="card border-0 shadow-sm">
-            <div class="card-body text-center p-5">
-                <!-- Icon -->
-                <div class="mb-4">
-                    <i class="mdi mdi-chart-line mdi-48px text-success"></i>
-                </div>
-                
-                <h4 class="card-title mb-3">Hasil Prediksi</h4>                
-                <a href="{{ route('prediction.results') }}" class="btn btn-success btn-lg">
-                    <i class="mdi mdi-chart-bar me-2"></i>Lihat Hasil
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
                 <!-- Data Table -->
                 @if($salesData->count() > 0)
                 <div class="card mb-4">
                     <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">
-                            <i class="fas fa-table me-2"></i>Data Penjualan ({{ $salesData->count() }} data)
+                            <i class="fas fa-table me-2"></i>Data Penjualan dan Curah Hujan
                         </h5>
-                        {{-- <span class="badge bg-light text-dark">
-                            {{ $obatList->count() }} jenis obat
-                        </span> --}}
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -138,41 +160,41 @@
                                         <th>#</th>
                                         <th>Tanggal</th>
                                         <th>Nama Obat</th>
+                                        <th>Satuan</th>
                                         <th>X1 (Harga)</th>
                                         <th>X2 (Curah Hujan)</th>
                                         <th>Y (Penjualan)</th>
                                         <th>Aksi</th>
                                     </tr>
                                 </thead>
-                                {{-- GANTI BAGIAN INI SAJA --}}
-<tbody>
-    @foreach($salesData as $index => $data)
-    <tr>
-        <td>{{ $index + 1 }}</td>
-<td>
-    @if($data->tanggal)
-        {{ \Carbon\Carbon::parse($data->tanggal)->format('d-m-Y') }}
-    @else
-        - 
-    @endif
-</td>
-        <td>{{ $data->nama_obat }}</td>
-        <td>{{ number_format($data->x1, 2) }}</td>
-        <td>{{ number_format($data->x2, 1) }}</td>
-        <td>{{ number_format($data->y, 0) }}</td>
-        <td>
-            <form action="{{ route('delete.data', $data->id) }}" method="POST" class="d-inline">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Hapus data ini?')">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </form>
-        </td>
-    </tr>
-    @endforeach
-</tbody>
-{{-- END GANTI --}}
+                                <tbody>
+                                    @foreach($salesData as $index => $data)
+                                    <tr>
+                                        <td>{{ $index + 1 }}</td>
+                                        <td>
+                                            @if($data->tanggal)
+                                                {{ \Carbon\Carbon::parse($data->tanggal)->format('d-m-Y') }}
+                                            @else
+                                                - 
+                                            @endif
+                                        </td>
+                                        <td>{{ $data->nama_obat }}</td>
+                                        <td>{{ $data->satuan ?? '-' }}</td>
+                                        <td>{{ number_format($data->x1, 2) }}</td>
+                                        <td>{{ number_format($data->x2, 1) }}</td>
+                                        <td>{{ number_format($data->y, 0) }}</td>
+                                        <td>
+                                            <form action="{{ route('delete.data', $data->id) }}" method="POST" class="d-inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Hapus data ini?')">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
                             </table>
                         </div>
                         
@@ -183,7 +205,6 @@
                             </a>
                             
                             @php
-                                // Hitung obat yang punya cukup data (minimal 2 data)
                                 $obatWithEnoughData = [];
                                 foreach ($obatList as $obat) {
                                     $count = $salesData->where('nama_obat', $obat)->count();
@@ -209,18 +230,6 @@
                                 </button>
                             </form>
                         </div>
-
-                        <!-- Info Obat yang Cukup Data -->
-                        @if(count($obatWithEnoughData) > 0)
-                        <div class="mt-3">
-                            <div class="alert alert-success">
-                                <strong>Obat yang siap untuk prediksi:</strong><br>
-                                @foreach($obatWithEnoughData as $obat => $count)
-                                <span class="badge bg-primary me-2 mb-1">{{ $obat }} ({{ $count }} data)</span>
-                                @endforeach
-                            </div>
-                        </div>
-                        @endif
                     </div>
                 </div>
                 @else

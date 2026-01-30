@@ -8,15 +8,15 @@ return new class extends Migration
 {
     public function up()
     {
-        Schema::table('regression_results', function (Blueprint $table) {
-            $table->string('nama_obat')->after('id')->nullable();
+        Schema::table('sales_data', function (Blueprint $table) {
+            $table->decimal('x2', 10, 1)->nullable()->change();
         });
     }
 
     public function down()
     {
-        Schema::table('regression_results', function (Blueprint $table) {
-            $table->dropColumn('nama_obat');
+        Schema::table('sales_data', function (Blueprint $table) {
+            $table->decimal('x2', 10, 1)->nullable(false)->change();
         });
     }
 };

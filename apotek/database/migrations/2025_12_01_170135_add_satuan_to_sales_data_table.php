@@ -9,17 +9,14 @@ return new class extends Migration
     public function up()
     {
         Schema::table('sales_data', function (Blueprint $table) {
-            $table->string('nama_obat')->after('period')->nullable();
-            $table->date('tanggal')->after('period')->nullable(); // Ganti period dengan tanggal
-            $table->dropColumn('period'); // Hapus kolom period
+            $table->string('satuan')->nullable()->after('nama_obat');
         });
     }
 
     public function down()
     {
         Schema::table('sales_data', function (Blueprint $table) {
-            $table->string('period')->after('id');
-            $table->dropColumn(['nama_obat', 'tanggal']);
+            $table->dropColumn('satuan');
         });
     }
 };

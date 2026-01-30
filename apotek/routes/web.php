@@ -11,6 +11,8 @@ Route::post('/calculate-regression', [SalesPredictionController::class, 'calcula
 Route::post('/clear-data', [SalesPredictionController::class, 'clearData'])->name('clear.data');
 Route::delete('/delete-data/{id}', [SalesPredictionController::class, 'deleteData'])->name('delete.data');
 Route::get('/download-template', [SalesPredictionController::class, 'downloadTemplate'])->name('download.template');
+Route::post('/import-sales', [SalesPredictionController::class, 'importSales'])->name('import.sales');
+Route::post('/import-rainfall', [SalesPredictionController::class, 'importRainfall'])->name('import.rainfall');
 Route::get('/', function () {
     return view('layouts.main');
 });

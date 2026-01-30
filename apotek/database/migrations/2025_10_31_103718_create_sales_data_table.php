@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('sales_data', function (Blueprint $table) {
             $table->id();
             $table->string('tanggal');
-                $table->string('nama_obat'); // ✅ ADD THIS  
+            $table->string('nama_obat'); // ✅ ADD THIS  
             $table->decimal('x1', 10, 2)->comment('Variable independen 1');
             $table->decimal('x2', 10, 1)->comment('Variable independen 2');
             $table->decimal('y', 10, 0)->comment('Variable dependen (penjualan)');

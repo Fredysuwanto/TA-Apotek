@@ -26,7 +26,39 @@
                             </button>
                         </div>
                     @endif
+<div class="alert alert-info">
+    <strong>Keterangan:</strong>
+    <ul class="mt-2 mb-0">
+        <li>
+            <strong>Persamaan Regresi</strong>  
+            Y = penjualan, Nilai a = penjualan dasarnya tanpa mempertimbangkan harga dan curah hujan, nilai b1 = jika hasil positif artinya saat harga naik -> penjualan akan naik, jika hasil negatif artinya saat harga naik -> penjualan akan turun, b2 = jika curah hujan meningkat → penjualan ikut meningkat., jika curah hujan meningkat → penjualan menurun.
+        </li>
 
+        <li>
+            <strong>MSE (Mean Squared Error)</strong>  
+            Semakin kecil nilai MSE, semakin baik kualitas model.  
+            MSE mengukur rata-rata kesalahan kuadrat antara nilai aktual dan nilai prediksi.
+        </li>
+
+        <li class="mt-2">
+            <strong>RMSE (Root Mean Squared Error)</strong>  
+            RMSE adalah akar dari MSE dan menunjukkan seberapa jauh prediksi menyimpang dari nilai aktual.  
+            Semakin kecil RMSE, semakin akurat prediksi. Misal RMSE 10 dan hasil prediksi 100, maka rata-rata meleset  ±10  penjualan.
+        </li>
+
+        <li class="mt-2">
+            <strong>MAPE (Mean Absolute Percentage Error)</strong>  
+            MAPE mengukur rata-rata persentase error antara prediksi dan nilai aktual.  
+            Semakin kecil MAPE semakin akurat model. (&lt;10% sangat baik, 10–20% baik, 20-50% layak, >50% buruk).
+        </li>
+
+        <li class="mt-2">
+            <strong>R² (Koefisien Determinasi)</strong>  
+            R² menunjukkan seberapa baik variabel independen (harga(b1) dan curah hujan(b2)) menjelaskan pengaruh terhadap variabel dependen (penjualan(y)).  
+            Nilai mendekati 1 berarti model sangat baik dalam menjelaskan data.
+        </li>
+    </ul>
+</div>
                     <div class="table-responsive">
                         <table class="table table-striped">
                             <thead class="thead-dark">
@@ -57,6 +89,9 @@
                                     </td>
                                     <td class="font-weight-bold text-primary">
                                         {{ number_format($result['prediksi'], 2) }}
+                                            @if(!empty($result['satuan']))
+                                                {{ ' ' . $result['satuan'] }}
+                                            @endif
                                     </td>
                                     <td>{{ number_format($result['metrics']['mse'] ?? 0, 4) }}</td>
                                     <td>{{ number_format($result['metrics']['rmse'] ?? 0, 4) }}</td>
